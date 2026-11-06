@@ -41,6 +41,8 @@ jobs:
             expect: invalid
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
+        with:
+          persist-credentials: false
       - uses: ./
         id: validate
         with:
@@ -48,26 +50,32 @@ jobs:
         continue-on-error: true
       - name: Assert expected outcome
         shell: bash
+        env:
+          EXPECT: ${{ matrix.expect }}
+          FILE: ${{ matrix.file }}
+          GOT: ${{ steps.validate.outputs.valid }}
         run: |
           set -euo pipefail
-          if [[ "${{ matrix.expect }}" == "valid" ]]; then
-            if [[ "${{ steps.validate.outputs.valid }}" != "true" ]]; then
-              echo "::error::Expected valid but got: ${{ steps.validate.outputs.valid }}"
+          if [[ "$EXPECT" == "valid" ]]; then
+            if [[ "$GOT" != "true" ]]; then
+              echo "::error::Expected valid but got: $GOT"
               exit 1
             fi
           else
-            if [[ "${{ steps.validate.outputs.valid }}" != "false" ]]; then
-              echo "::error::Expected invalid but got: ${{ steps.validate.outputs.valid }}"
+            if [[ "$GOT" != "false" ]]; then
+              echo "::error::Expected invalid but got: $GOT"
               exit 1
             fi
           fi
-          echo "Assertion passed: ${{ matrix.file }} is ${{ matrix.expect }}"
+          echo "Assertion passed: $FILE is $EXPECT"
 
   lint:
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
+        with:
+          persist-credentials: false
       - name: ShellCheck
         run: shellcheck scripts/*.sh
       - name: Bash syntax check
