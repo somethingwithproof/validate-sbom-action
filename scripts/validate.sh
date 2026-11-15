@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# SPDX-FileCopyrightText: 2026 Thomas Vincent <thomasvincent@gmail.com>
+# SPDX-License-Identifier: Apache-2.0
+
 set -euo pipefail
 
 # Write failure outputs and exit — ensures GITHUB_OUTPUT is populated
