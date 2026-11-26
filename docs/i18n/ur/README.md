@@ -15,7 +15,7 @@
 
 آفیشل CycloneDX اور SPDX JSON اسکیماز کے مقابلے میں SBOM فائلوں کی توثیق کریں۔ آف لائن۔ توثیق کے وقت کوئی نیٹ ورک کال نہیں۔
 
-[![CI](https://github.com/thomasvincent/validate-sbom-action/actions/workflows/ci.yml/badge.svg)](https://github.com/thomasvincent/validate-sbom-action/actions/workflows/ci.yml)
+[![CI](https://github.com/somethingwithproof/validate-sbom-action/actions/workflows/ci.yml/badge.svg)](https://github.com/somethingwithproof/validate-sbom-action/actions/workflows/ci.yml)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=somethingwithproof_validate-sbom-action&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=somethingwithproof_validate-sbom-action)
 [![Release](https://img.shields.io/github/v/release/somethingwithproof/validate-sbom-action)](https://github.com/somethingwithproof/validate-sbom-action/releases)
 [![GitHub Marketplace](https://img.shields.io/badge/marketplace-validate--sbom--action-blue?logo=github)](https://github.com/marketplace/actions/validate-sbom)
@@ -25,7 +25,7 @@
 ## استعمال
 
 ```yaml
-- uses: thomasvincent/validate-sbom-action@v1
+- uses: somethingwithproof/validate-sbom-action@v1
   with:
     input-file: sbom.json
 ```
@@ -78,7 +78,7 @@
 ### واضح فارمیٹ اور ورژن
 
 ```yaml
-- uses: thomasvincent/validate-sbom-action@v1
+- uses: somethingwithproof/validate-sbom-action@v1
   with:
     input-file: cyclonedx-sbom.json
     format: cyclonedx
@@ -88,7 +88,7 @@
 ### آؤٹ پٹس پڑھنا
 
 ```yaml
-- uses: thomasvincent/validate-sbom-action@v1
+- uses: somethingwithproof/validate-sbom-action@v1
   id: sbom
   with:
     input-file: sbom.json
@@ -114,7 +114,7 @@ strategy:
         format: spdx
 steps:
   - uses: actions/checkout@v4
-  - uses: thomasvincent/validate-sbom-action@v1
+  - uses: somethingwithproof/validate-sbom-action@v1
     with:
       input-file: ${{ matrix.sbom.path }}
       format: ${{ matrix.sbom.format }}
@@ -138,7 +138,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - uses: thomasvincent/validate-sbom-action@v1
+      - uses: somethingwithproof/validate-sbom-action@v1
         id: sbom
         with:
           input-file: sbom.json
@@ -161,7 +161,7 @@ jobs:
 زیادہ یقین دہانی کے لیے، مکمل کمٹ SHA پر پن (pin) کریں:
 
 ```yaml
-- uses: thomasvincent/validate-sbom-action@46e800d6e8da6a10d3dc8ab21baabb8f6e8320a0 # v1
+- uses: somethingwithproof/validate-sbom-action@691aeb90ba3a03910cbc14b618f3c8046e165f0b # v1
 ```
 
 ## مطابقت
