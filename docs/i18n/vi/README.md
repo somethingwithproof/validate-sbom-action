@@ -72,8 +72,6 @@ Action sẽ thoát với mã 1 và thiết lập `valid=false` trong các trư�
 | Không có lược đồ cho phiên bản phát hiện được | `Schema file not found for <format> <version>` |
 | Xác thực lược đồ thất bại | Đầu ra lỗi chi tiết của ajv-cli |
 
-Tất cả các nhánh lỗi đều ghi giá trị đầu ra (`valid=false`, `error-count=1`) trước khi thoát, giúp các bước phía sau vẫn đọc được ngay cả khi xảy ra lỗi cùng với `continue-on-error: true`.
-
 ## Ví dụ
 
 ### Chỉ định rõ định dạng và phiên bản
@@ -95,11 +93,16 @@ Tất cả các nhánh lỗi đều ghi giá trị đầu ra (`valid=false`, `er
     input-file: sbom.json
   continue-on-error: true
 
-- run: |
-    echo "Valid: ${{ steps.sbom.outputs.valid }}"
-    echo "Format: ${{ steps.sbom.outputs.format }}"
-    echo "Version: ${{ steps.sbom.outputs.spec-version }}"
-    echo "Errors: ${{ steps.sbom.outputs.error-count }}"
+- env:
+    SBOM_VALID: ${{ steps.sbom.outputs.valid }}
+    SBOM_FORMAT: ${{ steps.sbom.outputs.format }}
+    SBOM_SPEC_VERSION: ${{ steps.sbom.outputs.spec-version }}
+    SBOM_ERROR_COUNT: ${{ steps.sbom.outputs.error-count }}
+  run: |
+    echo "Valid: $SBOM_VALID"
+    echo "Format: $SBOM_FORMAT"
+    echo "Version: $SBOM_SPEC_VERSION"
+    echo "Errors: $SBOM_ERROR_COUNT"
 ```
 
 ### Xác thực nhiều tệp
@@ -145,11 +148,15 @@ jobs:
           input-file: sbom.json
       - name: Summary
         if: always()
+        env:
+          SBOM_VALID: ${{ steps.sbom.outputs.valid }}
+          SBOM_FORMAT: ${{ steps.sbom.outputs.format }}
+          SBOM_SPEC_VERSION: ${{ steps.sbom.outputs.spec-version }}
         run: |
           echo "### SBOM Validation" >> "$GITHUB_STEP_SUMMARY"
-          echo "- **Valid:** ${{ steps.sbom.outputs.valid }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- **Format:** ${{ steps.sbom.outputs.format }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- **Version:** ${{ steps.sbom.outputs.spec-version }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Valid:** $SBOM_VALID" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Format:** $SBOM_FORMAT" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Version:** $SBOM_SPEC_VERSION" >> "$GITHUB_STEP_SUMMARY"
 ```
 
 ## Mô hình bảo mật

@@ -72,8 +72,6 @@ JSON 형식만 지원합니다. XML SBOM은 지원하지 않습니다.
 | 감지된 버전에 해당하는 스키마 없음 | `Schema file not found for <format> <version>` |
 | 스키마 검증 실패 | 세부 정보가 포함된 ajv-cli 오류 출력 |
 
-모든 실패 경로는 종료 전에 출력값(`valid=false`, `error-count=1`)을 기록하므로 `continue-on-error: true`를 설정하면 실패 시에도 후속 단계에서 이를 읽을 수 있습니다.
-
 ## 예제
 
 ### 형식과 버전 명시적 지정
@@ -95,11 +93,16 @@ JSON 형식만 지원합니다. XML SBOM은 지원하지 않습니다.
     input-file: sbom.json
   continue-on-error: true
 
-- run: |
-    echo "Valid: ${{ steps.sbom.outputs.valid }}"
-    echo "Format: ${{ steps.sbom.outputs.format }}"
-    echo "Version: ${{ steps.sbom.outputs.spec-version }}"
-    echo "Errors: ${{ steps.sbom.outputs.error-count }}"
+- env:
+    SBOM_VALID: ${{ steps.sbom.outputs.valid }}
+    SBOM_FORMAT: ${{ steps.sbom.outputs.format }}
+    SBOM_SPEC_VERSION: ${{ steps.sbom.outputs.spec-version }}
+    SBOM_ERROR_COUNT: ${{ steps.sbom.outputs.error-count }}
+  run: |
+    echo "Valid: $SBOM_VALID"
+    echo "Format: $SBOM_FORMAT"
+    echo "Version: $SBOM_SPEC_VERSION"
+    echo "Errors: $SBOM_ERROR_COUNT"
 ```
 
 ### 여러 파일 검증
@@ -145,11 +148,15 @@ jobs:
           input-file: sbom.json
       - name: Summary
         if: always()
+        env:
+          SBOM_VALID: ${{ steps.sbom.outputs.valid }}
+          SBOM_FORMAT: ${{ steps.sbom.outputs.format }}
+          SBOM_SPEC_VERSION: ${{ steps.sbom.outputs.spec-version }}
         run: |
           echo "### SBOM Validation" >> "$GITHUB_STEP_SUMMARY"
-          echo "- **Valid:** ${{ steps.sbom.outputs.valid }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- **Format:** ${{ steps.sbom.outputs.format }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- **Version:** ${{ steps.sbom.outputs.spec-version }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Valid:** $SBOM_VALID" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Format:** $SBOM_FORMAT" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Version:** $SBOM_SPEC_VERSION" >> "$GITHUB_STEP_SUMMARY"
 ```
 
 ## 보안 모델

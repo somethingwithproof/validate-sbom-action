@@ -72,8 +72,6 @@ action จะจบการทำงานด้วยรหัส 1 และ�
 | ไม่มี schema สำหรับเวอร์ชันที่ตรวจพบ | `Schema file not found for <format> <version>` |
 | การตรวจสอบ schema ล้มเหลว | ข้อความแสดงข้อผิดพลาดจาก ajv-cli พร้อมรายละเอียด |
 
-ทุกเส้นทางที่เกิดความล้มเหลวจะเขียนค่าเอาต์พุต (`valid=false`, `error-count=1`) ก่อนจบการทำงาน เพื่อให้ขั้นตอนถัดไปสามารถอ่านค่าได้แม้จะเกิดข้อผิดพลาดเมื่อตั้งค่า `continue-on-error: true`
-
 ## ตัวอย่าง
 
 ### การระบุรูปแบบและเวอร์ชันอย่างชัดเจน
@@ -95,11 +93,16 @@ action จะจบการทำงานด้วยรหัส 1 และ�
     input-file: sbom.json
   continue-on-error: true
 
-- run: |
-    echo "Valid: ${{ steps.sbom.outputs.valid }}"
-    echo "Format: ${{ steps.sbom.outputs.format }}"
-    echo "Version: ${{ steps.sbom.outputs.spec-version }}"
-    echo "Errors: ${{ steps.sbom.outputs.error-count }}"
+- env:
+    SBOM_VALID: ${{ steps.sbom.outputs.valid }}
+    SBOM_FORMAT: ${{ steps.sbom.outputs.format }}
+    SBOM_SPEC_VERSION: ${{ steps.sbom.outputs.spec-version }}
+    SBOM_ERROR_COUNT: ${{ steps.sbom.outputs.error-count }}
+  run: |
+    echo "Valid: $SBOM_VALID"
+    echo "Format: $SBOM_FORMAT"
+    echo "Version: $SBOM_SPEC_VERSION"
+    echo "Errors: $SBOM_ERROR_COUNT"
 ```
 
 ### การตรวจสอบหลายไฟล์
@@ -145,11 +148,15 @@ jobs:
           input-file: sbom.json
       - name: Summary
         if: always()
+        env:
+          SBOM_VALID: ${{ steps.sbom.outputs.valid }}
+          SBOM_FORMAT: ${{ steps.sbom.outputs.format }}
+          SBOM_SPEC_VERSION: ${{ steps.sbom.outputs.spec-version }}
         run: |
           echo "### SBOM Validation" >> "$GITHUB_STEP_SUMMARY"
-          echo "- **Valid:** ${{ steps.sbom.outputs.valid }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- **Format:** ${{ steps.sbom.outputs.format }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- **Version:** ${{ steps.sbom.outputs.spec-version }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Valid:** $SBOM_VALID" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Format:** $SBOM_FORMAT" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Version:** $SBOM_SPEC_VERSION" >> "$GITHUB_STEP_SUMMARY"
 ```
 
 ## โมเดลความปลอดภัย

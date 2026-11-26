@@ -72,8 +72,6 @@ JSON nìkan. A kò ṣètìlẹ́yìn fún àwọn SBOM XML.
 | Kò sí àtòjọ-ìṣètò fún ẹ̀yà tí a ṣàwárí | `Schema file not found for <format> <version>` |
 | Ìjẹ́rìísí àtòjọ-ìṣètò kùnà | Èsì àṣìṣe ajv-cli pẹ̀lú àwọn àlàyé |
 
-Gbogbo àwọn ọ̀nà ìkùnà máa ń kọ àwọn èsì-ìjáde (`valid=false`, `error-count=1`) ṣáájú kí wọ́n tó jáde, kí àwọn ìgbésẹ̀ tó tẹ̀lé e lè ka wọ́n kódà nígbà ìkùnà pẹ̀lú `continue-on-error: true`.
-
 ## Àwọn Àpẹẹrẹ
 
 ### Ọ̀nà-ìṣètò àti ẹ̀yà pàtó
@@ -95,11 +93,16 @@ Gbogbo àwọn ọ̀nà ìkùnà máa ń kọ àwọn èsì-ìjáde (`valid=fals
     input-file: sbom.json
   continue-on-error: true
 
-- run: |
-    echo "Valid: ${{ steps.sbom.outputs.valid }}"
-    echo "Format: ${{ steps.sbom.outputs.format }}"
-    echo "Version: ${{ steps.sbom.outputs.spec-version }}"
-    echo "Errors: ${{ steps.sbom.outputs.error-count }}"
+- env:
+    SBOM_VALID: ${{ steps.sbom.outputs.valid }}
+    SBOM_FORMAT: ${{ steps.sbom.outputs.format }}
+    SBOM_SPEC_VERSION: ${{ steps.sbom.outputs.spec-version }}
+    SBOM_ERROR_COUNT: ${{ steps.sbom.outputs.error-count }}
+  run: |
+    echo "Valid: $SBOM_VALID"
+    echo "Format: $SBOM_FORMAT"
+    echo "Version: $SBOM_SPEC_VERSION"
+    echo "Errors: $SBOM_ERROR_COUNT"
 ```
 
 ### Jẹ́rìísí ọ̀pọ̀lọpọ̀ fáìlì
@@ -145,11 +148,15 @@ jobs:
           input-file: sbom.json
       - name: Summary
         if: always()
+        env:
+          SBOM_VALID: ${{ steps.sbom.outputs.valid }}
+          SBOM_FORMAT: ${{ steps.sbom.outputs.format }}
+          SBOM_SPEC_VERSION: ${{ steps.sbom.outputs.spec-version }}
         run: |
           echo "### SBOM Validation" >> "$GITHUB_STEP_SUMMARY"
-          echo "- **Valid:** ${{ steps.sbom.outputs.valid }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- **Format:** ${{ steps.sbom.outputs.format }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- **Version:** ${{ steps.sbom.outputs.spec-version }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Valid:** $SBOM_VALID" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Format:** $SBOM_FORMAT" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Version:** $SBOM_SPEC_VERSION" >> "$GITHUB_STEP_SUMMARY"
 ```
 
 ## Àwòṣe Ààbò

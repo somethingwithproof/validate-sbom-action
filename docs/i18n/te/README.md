@@ -72,8 +72,6 @@ JSON మాత్రమే. XML SBOMలకు మద్దతు లేదు.
 | గుర్తించబడిన వెర్షన్ కోసం స్కీమా లేదు | `Schema file not found for <format> <version>` |
 | స్కీమా ధృవీకరణ విఫలమైంది | వివరాలతో కూడిన ajv-cli లోపం అవుట్‌పుట్ |
 
-అన్ని వైఫల్య మార్గాలు నిష్క్రమించే ముందే అవుట్‌పుట్‌లను (`valid=false`, `error-count=1`) వ్రాస్తాయి, కాబట్టి `continue-on-error: true`తో వైఫల్యం జరిగినప్పటికీ డౌన్‌స్ట్రీమ్ దశలు వాటిని చదవగలవు.
-
 ## ఉదాహరణలు
 
 ### స్పష్టమైన ఫార్మాట్ మరియు వెర్షన్
@@ -95,11 +93,16 @@ JSON మాత్రమే. XML SBOMలకు మద్దతు లేదు.
     input-file: sbom.json
   continue-on-error: true
 
-- run: |
-    echo "Valid: ${{ steps.sbom.outputs.valid }}"
-    echo "Format: ${{ steps.sbom.outputs.format }}"
-    echo "Version: ${{ steps.sbom.outputs.spec-version }}"
-    echo "Errors: ${{ steps.sbom.outputs.error-count }}"
+- env:
+    SBOM_VALID: ${{ steps.sbom.outputs.valid }}
+    SBOM_FORMAT: ${{ steps.sbom.outputs.format }}
+    SBOM_SPEC_VERSION: ${{ steps.sbom.outputs.spec-version }}
+    SBOM_ERROR_COUNT: ${{ steps.sbom.outputs.error-count }}
+  run: |
+    echo "Valid: $SBOM_VALID"
+    echo "Format: $SBOM_FORMAT"
+    echo "Version: $SBOM_SPEC_VERSION"
+    echo "Errors: $SBOM_ERROR_COUNT"
 ```
 
 ### బహుళ ఫైళ్లను ధృవీకరించడం
@@ -145,11 +148,15 @@ jobs:
           input-file: sbom.json
       - name: Summary
         if: always()
+        env:
+          SBOM_VALID: ${{ steps.sbom.outputs.valid }}
+          SBOM_FORMAT: ${{ steps.sbom.outputs.format }}
+          SBOM_SPEC_VERSION: ${{ steps.sbom.outputs.spec-version }}
         run: |
           echo "### SBOM Validation" >> "$GITHUB_STEP_SUMMARY"
-          echo "- **Valid:** ${{ steps.sbom.outputs.valid }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- **Format:** ${{ steps.sbom.outputs.format }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- **Version:** ${{ steps.sbom.outputs.spec-version }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Valid:** $SBOM_VALID" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Format:** $SBOM_FORMAT" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Version:** $SBOM_SPEC_VERSION" >> "$GITHUB_STEP_SUMMARY"
 ```
 
 ## భద్రతా నమూనా

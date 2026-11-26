@@ -72,8 +72,6 @@ Lesi senzo siphuma ngekhodi engu-1 futhi sisetha `valid=false` kulezi zimo:
 | Ayikho i-schema yenguqulo etholiwe | `Schema file not found for <format> <version>` |
 | Ukuqinisekiswa kwe-schema kuyehluleka | Okuphumayo kwephutha kwe-ajv-cli okunemininingwane |
 
-Zonke izindlela zokwehluleka zibhala okuphumayo (`valid=false`, `error-count=1`) ngaphambi kokuphuma, ukuze izinyathelo ezilandelayo zikwazi ukukufunda ngisho noma kwehlulekile nge-`continue-on-error: true`.
-
 ## Izibonelo
 
 ### Ifomethi nenguqulo ecacisiwe
@@ -95,11 +93,16 @@ Zonke izindlela zokwehluleka zibhala okuphumayo (`valid=false`, `error-count=1`)
     input-file: sbom.json
   continue-on-error: true
 
-- run: |
-    echo "Valid: ${{ steps.sbom.outputs.valid }}"
-    echo "Format: ${{ steps.sbom.outputs.format }}"
-    echo "Version: ${{ steps.sbom.outputs.spec-version }}"
-    echo "Errors: ${{ steps.sbom.outputs.error-count }}"
+- env:
+    SBOM_VALID: ${{ steps.sbom.outputs.valid }}
+    SBOM_FORMAT: ${{ steps.sbom.outputs.format }}
+    SBOM_SPEC_VERSION: ${{ steps.sbom.outputs.spec-version }}
+    SBOM_ERROR_COUNT: ${{ steps.sbom.outputs.error-count }}
+  run: |
+    echo "Valid: $SBOM_VALID"
+    echo "Format: $SBOM_FORMAT"
+    echo "Version: $SBOM_SPEC_VERSION"
+    echo "Errors: $SBOM_ERROR_COUNT"
 ```
 
 ### Qinisekisa amafayela amaningi
@@ -145,11 +148,15 @@ jobs:
           input-file: sbom.json
       - name: Summary
         if: always()
+        env:
+          SBOM_VALID: ${{ steps.sbom.outputs.valid }}
+          SBOM_FORMAT: ${{ steps.sbom.outputs.format }}
+          SBOM_SPEC_VERSION: ${{ steps.sbom.outputs.spec-version }}
         run: |
           echo "### SBOM Validation" >> "$GITHUB_STEP_SUMMARY"
-          echo "- **Valid:** ${{ steps.sbom.outputs.valid }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- **Format:** ${{ steps.sbom.outputs.format }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- **Version:** ${{ steps.sbom.outputs.spec-version }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Valid:** $SBOM_VALID" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Format:** $SBOM_FORMAT" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Version:** $SBOM_SPEC_VERSION" >> "$GITHUB_STEP_SUMMARY"
 ```
 
 ## Imodeli Yokuvikeleka

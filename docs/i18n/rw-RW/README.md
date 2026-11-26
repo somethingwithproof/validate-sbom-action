@@ -72,8 +72,6 @@ Iki gikorwa gisohoka gifite kode 1 kandi kigashyiraho `valid=false` muri ibi bih
 | Nta schema ya verisiyo yamenyekanye | `Schema file not found for <format> <version>` |
 | Igenzura rya schema riratsinzwe | Ibisohoka by'ikosa bya ajv-cli bifite ibisobanuro birambuye |
 
-Inzira zose zitsinzwe zandika ibisohoka (`valid=false`, `error-count=1`) mbere yo gusohoka, kugira ngo intambwe zikurikira zishobore kubisoma n'igihe habayeho gutsindwa hakoreshejwe `continue-on-error: true`.
-
 ## Ingero
 
 ### Uburyo na verisiyo bigaragajwe ku mugaragaro
@@ -95,11 +93,16 @@ Inzira zose zitsinzwe zandika ibisohoka (`valid=false`, `error-count=1`) mbere y
     input-file: sbom.json
   continue-on-error: true
 
-- run: |
-    echo "Valid: ${{ steps.sbom.outputs.valid }}"
-    echo "Format: ${{ steps.sbom.outputs.format }}"
-    echo "Version: ${{ steps.sbom.outputs.spec-version }}"
-    echo "Errors: ${{ steps.sbom.outputs.error-count }}"
+- env:
+    SBOM_VALID: ${{ steps.sbom.outputs.valid }}
+    SBOM_FORMAT: ${{ steps.sbom.outputs.format }}
+    SBOM_SPEC_VERSION: ${{ steps.sbom.outputs.spec-version }}
+    SBOM_ERROR_COUNT: ${{ steps.sbom.outputs.error-count }}
+  run: |
+    echo "Valid: $SBOM_VALID"
+    echo "Format: $SBOM_FORMAT"
+    echo "Version: $SBOM_SPEC_VERSION"
+    echo "Errors: $SBOM_ERROR_COUNT"
 ```
 
 ### Kugenzura amadosiye menshi
@@ -145,11 +148,15 @@ jobs:
           input-file: sbom.json
       - name: Summary
         if: always()
+        env:
+          SBOM_VALID: ${{ steps.sbom.outputs.valid }}
+          SBOM_FORMAT: ${{ steps.sbom.outputs.format }}
+          SBOM_SPEC_VERSION: ${{ steps.sbom.outputs.spec-version }}
         run: |
           echo "### SBOM Validation" >> "$GITHUB_STEP_SUMMARY"
-          echo "- **Valid:** ${{ steps.sbom.outputs.valid }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- **Format:** ${{ steps.sbom.outputs.format }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- **Version:** ${{ steps.sbom.outputs.spec-version }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Valid:** $SBOM_VALID" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Format:** $SBOM_FORMAT" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Version:** $SBOM_SPEC_VERSION" >> "$GITHUB_STEP_SUMMARY"
 ```
 
 ## Imiterere y'umutekano
